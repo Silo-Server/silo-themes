@@ -12,6 +12,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 concurrency:
   group: theme-catalog-${{ github.ref }}
@@ -29,10 +30,29 @@ jobs:
           ref: ${{ github.ref_name }}
           fetch-depth: 0
 
-      - name: Generate catalog
-        run: python3 scripts/update-catalog.py --touch
+      - name: Detect theme changes
+        id: changes
+        run: |
+          touch_arg=""
 
-      - name: Commit catalog
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            touch_arg="--touch"
+          elif git rev-parse --verify "${{ github.event.before }}" >/dev/null 2>&1; then
+            theme_changes="$(git diff --name-only "${{ github.event.before }}" "${{ github.sha }}" -- themes)"
+            if [ -n "$theme_changes" ]; then
+              touch_arg="--touch"
+            fi
+          fi
+
+          echo "touch_arg=$touch_arg" >> "$GITHUB_OUTPUT"
+
+      - name: Generate catalog
+        run: python3 scripts/update-catalog.py ${{ steps.changes.outputs.touch_arg }}
+
+      - name: Open catalog update pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH_NAME: automation/update-theme-catalog
         run: |
           if git diff --quiet -- catalog.json; then
             echo "catalog.json already up to date"
@@ -41,6 +61,19 @@ jobs:
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B "$BRANCH_NAME"
           git add catalog.json
-          git commit -m "chore: update theme catalog [skip ci]"
-          git push origin HEAD:${{ github.ref_name }}
+          git commit -m "chore: update theme catalog"
+
+          git fetch origin "$BRANCH_NAME:refs/remotes/origin/$BRANCH_NAME" || true
+          git push --force-with-lease origin "$BRANCH_NAME"
+
+          if gh pr view "$BRANCH_NAME" >/dev/null 2>&1; then
+            echo "Updated existing catalog update pull request"
+          else
+            gh pr create \
+              --base "${{ github.ref_name }}" \
+              --head "$BRANCH_NAME" \
+              --title "chore: update theme catalog" \
+              --body "Automated catalog update generated from themes in \`themes/\`."
+          fi

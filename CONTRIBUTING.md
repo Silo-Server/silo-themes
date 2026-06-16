@@ -133,5 +133,5 @@ The following are **allowed**:
 ## Submitting a theme
 
 1. Create your theme file in the `themes/` directory as `<id>.json` or `<id>.silo-theme.json`
-2. Open a pull request — the catalog is regenerated automatically after merge
+2. Open a pull request — catalog automation opens a follow-up PR after merge if `catalog.json` needs changes
 3. Optionally edit `catalog.json` in the same pull request if you want custom tags or preview colors
