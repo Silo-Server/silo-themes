@@ -1,6 +1,8 @@
 dist/
 *.log
 logs/
+__pycache__/
+*.pyc
 .env
 .env.*
 !.env.example

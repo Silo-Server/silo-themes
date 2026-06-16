@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-04-02T14:00:00Z",
+  "updatedAt": "2026-06-16T19:38:42Z",
   "themes": [
     {
       "id": "nord-aurora",
@@ -198,6 +198,17 @@
       "previewBg": "#0d1513",
       "tags": ["dark", "cool", "nature"],
       "downloadUrl": "https://raw.githubusercontent.com/Silo-Server/silo-themes/main/themes/verdant-ink.json",
+      "version": "1.0.0"
+    },
+    {
+      "id": "porsche-design-system",
+      "name": "Porsche Design System v4",
+      "description": "Porsche Design System v4 dark theme for Silo.",
+      "author": "Silo User",
+      "previewAccent": "#1A44EA",
+      "previewBg": "hsl(225 66.7% 1.2%)",
+      "tags": ["dark"],
+      "downloadUrl": "https://raw.githubusercontent.com/Silo-Server/silo-themes/main/themes/porsche-design-system.silo-theme.json",
       "version": "1.0.0"
     }
   ]

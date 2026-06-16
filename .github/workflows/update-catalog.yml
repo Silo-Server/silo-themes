@@ -1,0 +1,46 @@
+name: Update Theme Catalog
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "themes/**"
+      - "scripts/update-catalog.py"
+      - ".github/workflows/update-catalog.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: theme-catalog-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  update-catalog:
+    if: github.ref_type == 'branch'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+
+      - name: Generate catalog
+        run: python3 scripts/update-catalog.py --touch
+
+      - name: Commit catalog
+        run: |
+          if git diff --quiet -- catalog.json; then
+            echo "catalog.json already up to date"
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add catalog.json
+          git commit -m "chore: update theme catalog [skip ci]"
+          git push origin HEAD:${{ github.ref_name }}
