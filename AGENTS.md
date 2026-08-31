@@ -7,7 +7,8 @@ validation requirements.
 ## Repository structure
 
 - `themes/` contains individual v1 theme files. A theme ID is a kebab-case slug
-  and must match its filename.
+  and must match the `<id>` portion of its filename before `.json` or
+  `.silo-theme.json`.
 - `catalog.json` is the generated index consumed by Silo. Generate it with
   `python3 scripts/update-catalog.py` and validate it with
   `python3 scripts/update-catalog.py --check`.
