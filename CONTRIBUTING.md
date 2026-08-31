@@ -1,4 +1,15 @@
-# Contributing Themes
+# Contributing to Silo Themes
+
+The [Silo contribution guide](https://github.com/Silo-Server/.github/blob/main/CONTRIBUTING.md)
+covers project-wide coordination, focused changes, evidence, AI disclosure, and
+pull request expectations. Those requirements apply here; this guide adds the
+theme-specific format and submission workflow.
+
+Theme additions and narrow corrections can go straight to a pull request. Open
+an [issue](https://github.com/Silo-Server/silo-themes/issues) before changing the
+theme file format, catalog schema, sanitization assumptions, or stable selector
+contract. Product or renderer changes belong in
+[`silo-server`](https://github.com/Silo-Server/silo-server).
 
 ## Theme file format
 
@@ -21,8 +32,8 @@ Themes use the `SiloThemeFile` v1 format:
 }
 ```
 
-- `baseTheme` must be one of the built-in themes: `midnight-cinema`, `cinema-light`, `cobalt-studio`, `oxblood-noir`, `ember-slate`, `evergreen-studio`, `verdant-ink`, `catppuccin`, `gruvbox`, `void-space`, `charcoal-studio`, `graphite-pro`, `obsidian-depth`
-- `vars` contains only the CSS tokens you want to override (you don't need all 33)
+- `baseTheme` must be one of the built-in themes: `midnight-cinema`, `cinema-light`, `cobalt-studio`, `oxblood-noir`, `evergreen-studio`
+- `vars` contains only the CSS tokens you want to override; you do not need to include every token
 - `customCss` is optional raw CSS that's sanitized on install (external URLs are stripped)
 
 ## Available CSS tokens
@@ -36,7 +47,7 @@ These tokens can be set in the `vars` object:
 `primary`, `primary-foreground`, `secondary`, `secondary-foreground`, `muted`, `muted-foreground`, `accent`, `accent-foreground`, `destructive`, `destructive-foreground`, `ambient`
 
 ### Sidebar
-`sidebar`, `sidebar-foreground`, `sidebar-primary`, `sidebar-primary-foreground`, `sidebar-accent`, `sidebar-accent-foreground`, `sidebar-border`, `sidebar-ring`
+`sidebar`, `sidebar-foreground`, `sidebar-primary`, `sidebar-primary-foreground`, `sidebar-accent`, `sidebar-accent-foreground`, `sidebar-border`, `sidebar-section-divider`, `sidebar-ring`
 
 ### Borders & Focus
 `border`, `input`, `ring`
@@ -55,8 +66,6 @@ These class names are available for targeting in `customCss`:
 | `#main-content` | Main content area |
 | `.mobile-header` | Mobile top navigation bar |
 | `.sidebar-logo` | Logo + name wrapper |
-| `.sidebar-logo-icon` | The logo icon |
-| `.sidebar-logo-text` | The server name text |
 | `.sidebar-nav` | Main navigation list |
 | `.sidebar-libraries` | Libraries section |
 | `.sidebar-personal` | "Your Stuff" section (favorites, watchlist, etc.) |
@@ -86,7 +95,7 @@ These class names are available for targeting in `customCss`:
 | `.media-card` | Poster card (hover: lift + brighten) |
 | `.media-card-image` | Poster image container |
 | `.progress-bar` | Watch progress bar |
-| `.watched-badge` | Completed checkmark badge |
+| `[data-watched-indicator]` | Completed checkmark indicator |
 | `.play-overlay` | Play button overlay on thumbnails |
 
 ### Surfaces
@@ -127,11 +136,40 @@ Custom CSS is sanitized on save and install. The following are **blocked**:
 The following are **allowed**:
 - `url(data:...)` — inline base64 images
 - `url(/path)` — local server paths
+- `url(relative/path)` — same-origin relative paths
 - `url(#ref)` — SVG fragment references
 - All CSS selectors, properties, animations, transforms, etc.
 
 ## Submitting a theme
 
-1. Create your theme file in the `themes/` directory as `<id>.json` or `<id>.silo-theme.json`
-2. Open a pull request — catalog automation opens a follow-up PR after merge if `catalog.json` needs changes
-3. Optionally edit `catalog.json` in the same pull request if you want custom tags or preview colors
+1. Create your theme file in the `themes/` directory as `<id>.json` or
+   `<id>.silo-theme.json`.
+2. Open a pull request with the theme file. Do not commit the generated
+   `catalog.json`; catalog automation opens a follow-up pull request after
+   merge.
+3. Add custom tags or preview colors to that catalog pull request when needed.
+
+## Validate your change
+
+For a theme change, generate the catalog locally, inspect its diff, then discard
+the generated file before opening the theme pull request:
+
+```sh
+python3 scripts/update-catalog.py
+git diff -- catalog.json
+git restore -- catalog.json
+```
+
+The generator checks the filename-derived ID, required text fields, and that
+`vars` is an object. It does not validate every v1 field, CSS token, or
+`customCss` value. Review the theme against this guide, exercise it in a
+running Silo web app when possible, and include a screenshot in the pull
+request. For changes that should leave the catalog current, also run
+`python3 scripts/update-catalog.py --check`.
+
+## Open the pull request
+
+Use a Conventional Commit title, describe the visual intent and supported base
+theme, and paste the validation result. Read the
+[AI-assisted contribution policy](https://github.com/Silo-Server/silo-server/blob/main/docs/ai-contributions.md)
+and include its disclosure block.
