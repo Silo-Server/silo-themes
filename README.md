@@ -4,7 +4,7 @@ Community theme catalog for Silo.
 
 Theme files live in `themes/`; `catalog.json` is the generated index consumed by
 Silo. Each theme extends a built-in base theme with CSS token overrides and may
-include sanitized custom CSS.
+include custom CSS that Silo sanitizes on save or install.
 
 ## Browse and submit themes
 
