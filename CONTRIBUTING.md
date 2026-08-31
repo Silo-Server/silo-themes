@@ -142,22 +142,30 @@ The following are **allowed**:
 
 ## Submitting a theme
 
-1. Create your theme file in the `themes/` directory as `<id>.json` or `<id>.silo-theme.json`.
-2. Run `python3 scripts/update-catalog.py`, review the generated `catalog.json`
-   diff, and commit it with the theme. Add custom tags or preview colors there
-   when needed.
-3. Open a pull request with the theme file and current catalog.
+1. Create your theme file in the `themes/` directory as `<id>.json` or
+   `<id>.silo-theme.json`.
+2. Open a pull request with the theme file. Do not commit the generated
+   `catalog.json`; catalog automation opens a follow-up pull request after
+   merge.
+3. Add custom tags or preview colors to that catalog pull request when needed.
 
 ## Validate your change
 
+For a theme change, generate the catalog locally, inspect its diff, then discard
+the generated file before opening the theme pull request:
+
 ```sh
-python3 scripts/update-catalog.py --check
+python3 scripts/update-catalog.py
+git diff -- catalog.json
+git restore -- catalog.json
 ```
 
-The command checks required basic theme fields and fails if `catalog.json` is
-stale. It does not validate every v1 field, CSS token, or `customCss` value.
-Review new themes in a running Silo web app when possible and include a
-screenshot in the pull request.
+The generator checks the filename-derived ID, required text fields, and that
+`vars` is an object. It does not validate every v1 field, CSS token, or
+`customCss` value. Review the theme against this guide, exercise it in a
+running Silo web app when possible, and include a screenshot in the pull
+request. For changes that should leave the catalog current, also run
+`python3 scripts/update-catalog.py --check`.
 
 ## Open the pull request
 
