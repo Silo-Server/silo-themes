@@ -11,7 +11,8 @@ include sanitized custom CSS.
 - Browse the source files in [`themes/`](themes/).
 - Read [CONTRIBUTING.md](CONTRIBUTING.md) for the v1 file format, supported CSS
   tokens, stable selectors, sanitization rules, and submission workflow.
-- Run `python3 scripts/update-catalog.py --check` before opening a pull request.
+- Follow the catalog inspection and validation workflow in
+  [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request.
 
 ## License
 
